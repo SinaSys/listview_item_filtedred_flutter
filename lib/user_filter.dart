@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:listview_item_filtedred/debouncer.dart';
 
 import 'api_service.dart';
 import 'model/user.dart';
@@ -12,9 +13,9 @@ class UserFilterDemo extends StatefulWidget {
 }
 
 
-
 class UserFilterDemoState extends State<UserFilterDemo> {
-  //
+
+  final _debouncer =Debouncer(milliseconds: 2000);
   List<User> users = List();
   List<User> filteredUsers = List();
 
@@ -43,12 +44,14 @@ class UserFilterDemoState extends State<UserFilterDemo> {
               hintText: 'Filter by name or email',
             ),
             onChanged: (data) {
+              _debouncer.run(() {
                 setState(() {
                   filteredUsers = users
                       .where((item) => (
                       item.name.toLowerCase().contains(data.toLowerCase()) ||
-                      item.email.toLowerCase().contains(data.toLowerCase()))).toList();
+                          item.email.toLowerCase().contains(data.toLowerCase()))).toList();
                 });
+              });
             },
           ),
           Expanded(
